@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #0d0d0d;
+  --blue: #0a6cff;
+  --purple: #682aef;
+}
+
+html, body, #root { height: 100%; }
+body { @apply font-sans text-ink antialiased; }
+
+/* ---- 黑胶囊主按钮 / 白胶囊次按钮（WPS 签名控件） ---- */
+.btn-black {
+  @apply inline-flex items-center justify-center gap-1 rounded-full bg-ink text-white text-[13px] font-semibold px-5 h-10
+         transition-all duration-300 ease-wps hover:opacity-85 active:scale-[.97] select-none cursor-pointer;
+}
+.btn-white {
+  @apply inline-flex items-center justify-center gap-1 rounded-full bg-white border border-ink-06 text-[13px] text-ink px-4 h-10
+         transition-all duration-300 ease-wps hover:bg-ink-06 active:scale-[.97] select-none cursor-pointer;
+}
+.btn-sm { @apply h-8 px-3.5 text-xs; }
+
+/* ---- 快捷指令 chip ---- */
+.chip {
+  @apply inline-flex items-center rounded-full border border-ink-12 bg-white px-3 py-1 text-xs text-ink-66
+         cursor-pointer transition-all duration-200 ease-fast hover:border-brand-blue hover:text-brand-blue select-none;
+}
+
+/* ---- 流式打字光标 ---- */
+.type-cursor::after {
+  content: '▍';
+  @apply text-ai-purple;
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---- 骨架屏 shimmer ---- */
+.skeleton {
+  @apply relative overflow-hidden bg-ink-06 rounded-lg;
+}
+.skeleton::after {
+  content: '';
+  @apply absolute inset-0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent);
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+
+/* ---- 元素选中描边 ---- */
+.el-selected {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---- diff 呼吸高亮（2s 后消退由 JS 控制移除） ---- */
+.diff-breathe {
+  animation: breathe 1s ease-in-out 2;
+  border-radius: 4px;
+}
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(10,108,255,.0); background: rgba(10,108,255,0); }
+  50% { box-shadow: 0 0 0 3px rgba(10,108,255,.55); background: rgba(10,108,255,.08); }
+}
+
+/* ---- 幻灯片逐页点亮 ---- */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+.slide-in { animation: slideIn .45s cubic-bezier(.23,1,.32,1) both; }
+
+/* ---- 消息气泡进入 ---- */
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.msg-in { animation: msgIn .3s cubic-bezier(.23,1,.32,1) both; }
+
+/* ---- 抽屉滑入 ---- */
+@keyframes drawerIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: none; }
+}
+.drawer-in { animation: drawerIn .28s cubic-bezier(.23,1,.32,1) both; }
+
+/* ---- toast ---- */
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+.toast-in { animation: toastIn .25s cubic-bezier(.23,1,.32,1) both; }
+
+/* ---- 进度条 ---- */
+.progress-track { @apply h-1.5 rounded-full bg-ink-06 overflow-hidden; }
+.progress-bar {
+  @apply h-full rounded-full;
+  background: linear-gradient(90deg, var(--purple), #9e75f5);
+  transition: width .4s cubic-bezier(.645,.045,.355,1);
+}
+
+/* ---- 选中浮动工具条（chips + 就近输入框） ---- */
+.float-chips {
+  @apply absolute z-30 rounded-card bg-white p-2.5;
+  box-shadow: 0 8px 28px rgba(13,13,13,.16);
+  animation: msgIn .2s cubic-bezier(.23,1,.32,1) both;
+}
+.float-chips .tb-input {
+  @apply h-8 flex-1 rounded-full border border-ink-06 px-3 text-xs outline-none transition-colors placeholder:text-ink-24 focus:border-brand-blue;
+}
+
+/* ---- 点击位置脉冲标记（Kimi 式位置锚点） ---- */
+.marker-dot {
+  @apply pointer-events-none absolute z-30 rounded-full;
+  width: 12px; height: 12px; margin: -6px 0 0 -6px;
+  background: var(--blue);
+  box-shadow: 0 0 0 2px #fff;
+}
+.marker-dot::after {
+  content: '';
+  @apply absolute rounded-full;
+  inset: -6px;
+  border: 2px solid rgba(10,108,255,.55);
+  animation: markerPing 1.5s ease-out infinite;
+}
+@keyframes markerPing {
+  0% { transform: scale(.55); opacity: 1; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+
+/* ---- 层级面包屑 ---- */
+.lv-btn {
+  @apply inline-flex cursor-pointer select-none items-center rounded-full border border-ink-12 bg-white px-2 py-0.5 text-[10px] text-ink-46
+         transition-colors hover:border-brand-blue hover:text-brand-blue;
+}
+.lv-btn-on {
+  @apply border-brand-blue bg-brand-blue text-white hover:text-white;
+}
+
+/* ---- 对话输入区引用 chip（Kimi 式） ---- */
+.quote-chip {
+  @apply mb-2 flex items-center gap-1.5 rounded-lg border border-ink-06 bg-page px-2.5 py-1.5 text-xs text-ink-66;
+  border-left: 3px solid var(--blue);
+}
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { @apply bg-ink-12 rounded-full; }
+::-webkit-scrollbar-track { background: transparent; }
