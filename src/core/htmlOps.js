@@ -6,6 +6,22 @@ import { findSlide, slideIndex, HTML_THEMES } from './htmlDeck';
 const parse = (html) => new DOMParser().parseFromString(html, 'text/html');
 const serialize = (doc) => doc.querySelector('section.slide')?.outerHTML || doc.body.innerHTML;
 
+// 结构保留式文本替换：含样式子元素（如 span.accent）时，新文案写入首个文本节点、
+// 其余文本清空，类名与标签结构不动（避免 textContent 整体替换破坏原设计）
+function setTextPreserve(doc, el, next) {
+  const meaningful = [...el.children].filter((c) => c.textContent.trim());
+  if (!meaningful.length) {
+    el.textContent = next;
+    return;
+  }
+  const walker = doc.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  if (!nodes.length) { el.textContent = next; return; }
+  nodes[0].nodeValue = next;
+  nodes.slice(1).forEach((n) => { n.nodeValue = ''; });
+}
+
 // 新插入页：复用源设计的 s-head/note/b 类，继承版式风格
 function buildNewSlide(topic, n) {
   const id = `px_${Date.now().toString(36)}`;
@@ -85,7 +101,7 @@ export function applyOps(deck0, ops) {
         const el = doc.querySelector(op.path) || doc.querySelector(`${op.path} p`);
         if (!el) return null;
         const next = rewriteText(el.textContent.trim(), op.args.mode, op.args.setText);
-        el.textContent = next;
+        setTextPreserve(doc, el, next);
         slide.html = serialize(doc);
         if (el.matches('h1,h2,h3')) slide.title = next;
         const page = slideIndex(deck, slide.id) + 1;

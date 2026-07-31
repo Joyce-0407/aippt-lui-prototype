@@ -5,8 +5,8 @@ import { themeCssOf } from '../core/htmlDeck';
 
 const W = 1280, H = 720;
 // 选择阶梯（叶→根）：文字 → 卡片 → 组合；图表单独优先判定；未命中任何层 = 整页
-const TEXT_SEL = 'h1,h2,h3,h4,h5,p,li,blockquote,img,.s-sub,.lbl,.v';
-const CARD_SEL = '.stat-card,.b,.tl-item,.bar-row';
+const TEXT_SEL = 'h1,h2,h3,h4,h5,p,li,blockquote,img,.s-sub,.lbl,.v,.lead,.quote,.d,.sign';
+const CARD_SEL = '.stat-card,.b,.tl-item,.bar-row,.face-card';
 const GROUP_SEL = '.stat-grid,.note,.timeline,.bar-block';
 const CHART_SEL = '.echart';
 
