@@ -56,7 +56,7 @@ export default function ChatPanel({ messages, onSend, onClarifyPick, onOpsLocate
   };
 
   return (
-    <div className="flex h-full w-[380px] flex-none flex-col border-l border-ink-06 bg-white">
+    <div className="flex h-full w-[clamp(300px,26vw,380px)] flex-none flex-col border-l border-ink-06 bg-white">
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4">
         {messages.map((m) => (
           <div key={m.id} className={`msg-in mb-4 flex ${m.from === 'user' ? 'justify-end' : 'items-start gap-2'}`}>

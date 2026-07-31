@@ -57,18 +57,29 @@ export default function Editor({ deck0 }) {
     ? { slideId: selection.slideId, path: curLevel?.path ?? null, role: curLevel?.role ?? 'page', text: curLevel?.text ?? selection.text, fontSize: curLevel?.fontSize }
     : null;
 
-  // 画布缩放自适应预览区
+  // 画布缩放自适应预览区（按实际 padding 计算可用空间）
   useEffect(() => {
     const el = previewRef.current;
     if (!el) return;
     const fit = () => {
       const r = el.getBoundingClientRect();
-      setCanvasScale(Math.max(0.3, Math.min((r.width - 64) / SLIDE_W, (r.height - 48) / SLIDE_H)));
+      const cs = getComputedStyle(el);
+      const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      setCanvasScale(Math.max(0.3, Math.min((r.width - padX) / SLIDE_W, (r.height - padY) / SLIDE_H)));
     };
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(el);
     return () => ro.disconnect();
+  }, []);
+
+  // 小窗提示：固定壳层占比过高时提醒放大窗口
+  const [smallWin, setSmallWin] = useState(() => window.innerWidth < 1100);
+  useEffect(() => {
+    const fn = () => setSmallWin(window.innerWidth < 1100);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
   }, []);
 
   // ---- 欢迎引导 ----
@@ -279,10 +290,18 @@ export default function Editor({ deck0 }) {
         <button className="btn-black btn-sm" onClick={() => showToast('原型演示版，导出功能敬请期待')}>导出 PPTX</button>
       </header>
 
+      {/* 小窗提示条 */}
+      {smallWin && (
+        <div className="flex flex-none items-center justify-center gap-2 border-b border-[#f0e0b8] bg-[#fdf6e3] px-4 py-1.5 text-xs text-[#8a6d1f]">
+          当前窗口较小，画布已自适应缩放；建议放大浏览器窗口（或全屏）获得最佳演示效果
+          <button className="text-[#b0945a] hover:text-[#8a6d1f]" onClick={() => setSmallWin(false)}>×</button>
+        </div>
+      )}
+
       <div className="flex flex-1 overflow-hidden">
         {/* 左：预览区 */}
         <div className="flex flex-1 flex-col bg-page">
-          <div ref={previewRef} className="relative flex flex-1 items-center justify-center overflow-hidden p-8">
+          <div ref={previewRef} className="relative flex flex-1 items-center justify-center overflow-hidden p-5">
             {/* 点击位置的脉冲标记（Kimi 式位置锚点） */}
             {selection && selPos && (
               <div className="marker-dot" style={{ left: selPos.x, top: selPos.y }} />
